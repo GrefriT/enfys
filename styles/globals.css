@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+	a:not(.a-no-style) {
+		@apply transition hover:text-emerald-600;
+	}
+}
