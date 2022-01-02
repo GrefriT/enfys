@@ -19,7 +19,7 @@ function SingleInput({ isActive, ...props }: OTPSingle) {
 			autoComplete="off"
 			autoCapitalize="off"
 			maxLength={1}
-			className="w-8 md:w-16  py-2 font-bold text-4xl md:text-7xl text-center bg-transparent border-b-4 border-emerald-500 rounded-none transition focus:border-emerald-600 focus:outline-none"
+			className="w-10 md:w-20 py-2 font-bold text-4xl md:text-7xl text-center bg-transparent border-b-4 border-emerald-500 rounded-none transition focus:border-emerald-600 focus:outline-none"
 		/>
 	);
 }
@@ -35,7 +35,7 @@ export default function OTPInput({ length, value, onChange }: OTP) {
 
 	const getOTPValue = () => value.split("");
 
-	const handleChange = (otp: string[]) => onChange(otp.join(""));
+	const handleChange = (otp: string[]) => onChange(otp.join("").toUpperCase());
 
 	const focusInput = (distance: number) =>
 		setActive((active) => Math.max(Math.min(length - 1, active + distance), 0));
@@ -55,14 +55,14 @@ export default function OTPInput({ length, value, onChange }: OTP) {
 			.slice(0, length - active)
 			.split("");
 
-		let nextActiveInput = active;
+		let nextActive = active;
 		for (let pos = 0; pos < length; ++pos)
 			if (pos >= active && pastedData.length > 0) {
 				otp[pos] = pastedData.shift();
-				nextActiveInput++;
+				nextActive++;
 			}
 
-		focusInput(nextActiveInput - active);
+		focusInput(nextActive - active);
 		handleChange(otp);
 	}
 
@@ -80,7 +80,8 @@ export default function OTPInput({ length, value, onChange }: OTP) {
 		} else if (e.key === "ArrowRight") {
 			e.preventDefault();
 			focusInput(1);
-		} else if (e.key === " " || e.key === "Spacebar" || e.key === "Space") e.preventDefault();
+		} else if (/[^a-z\d]/i.test(e.key) || e.key === "Spacebar" || e.key === "Space")
+			e.preventDefault();
 	}
 
 	function renderInputs() {
@@ -108,5 +109,5 @@ export default function OTPInput({ length, value, onChange }: OTP) {
 		return inputs;
 	}
 
-	return <div className="flex gap-4">{renderInputs()}</div>;
+	return <div className="flex gap-2 md:gap-4">{renderInputs()}</div>;
 }
