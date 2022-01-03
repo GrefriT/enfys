@@ -5,7 +5,7 @@ import DefaultLayout from "layouts";
 const defaultGetLayout = (page: JSX.Element) => <DefaultLayout>{page}</DefaultLayout>;
 
 type Props = AppProps & {
-	Component: AppProps["Component"] & { getLayout?: typeof defaultGetLayout };
+	Component: { getLayout?: typeof defaultGetLayout };
 };
 
 export default function App({ Component, pageProps }: Props) {

@@ -11,7 +11,7 @@ export default function Home() {
 					<br /> of video calls
 				</h1>
 				<p className="opacity-75">
-					No freaky accounts, completly anonymous.
+					No freaky accounts with emails and passwords, completly anonymous.
 					<br /> Take back control of your data.
 				</p>
 			</div>

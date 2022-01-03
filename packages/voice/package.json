@@ -1,0 +1,19 @@
+{
+	"name": "@enfys/voice",
+	"main": "index.js",
+	"license": "SEE LICENSE IN LICENSE",
+	"version": "0.0.0",
+	"scripts": {
+		"dev": "nodemon index.js",
+		"start": "node index.js"
+	},
+	"dependencies": {
+		"fastify": "^3.25.3",
+		"fastify-cors": "^6.0.2",
+		"fastify-websocket": "^4.0.0",
+		"node-turn": "^0.0.6"
+	},
+	"devDependencies": {
+		"pino-pretty": "^7.3.0"
+	}
+}

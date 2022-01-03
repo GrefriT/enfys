@@ -19,7 +19,7 @@ function SingleInput({ isActive, ...props }: OTPSingle) {
 			autoComplete="off"
 			autoCapitalize="off"
 			maxLength={1}
-			className="w-10 md:w-20 py-2 font-bold text-4xl md:text-7xl text-center bg-transparent border-b-4 border-emerald-500 rounded-none transition focus:border-emerald-600 focus:outline-none"
+			className="w-10 md:w-20 py-2 font-bold text-4xl md:text-7xl text-center bg-transparent border-b-4 border-emerald-500 rounded-none transition focus:border-emerald-600 focus:outline-none disabled:grayscale"
 		/>
 	);
 }
@@ -27,10 +27,11 @@ function SingleInput({ isActive, ...props }: OTPSingle) {
 type OTP = {
 	length: number;
 	value: string;
+	disabled?: boolean;
 	onChange: (value: string) => void;
 };
 
-export default function OTPInput({ length, value, onChange }: OTP) {
+export default function OTPInput({ length, value, disabled, onChange }: OTP) {
 	const [active, setActive] = useState<number | undefined>();
 
 	const getOTPValue = () => value.split("");
@@ -91,6 +92,7 @@ export default function OTPInput({ length, value, onChange }: OTP) {
 		for (let i = 0; i < length; i++) {
 			inputs.push(
 				<SingleInput
+					disabled={disabled}
 					value={otp[i] || ""}
 					isActive={active === i}
 					onKeyDown={handleKeyDown}

@@ -1,0 +1,14 @@
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# local env files
+.env.development.local
+.env.test.local
+.env.production.local
+
+# typescript
+*.tsbuildinfo

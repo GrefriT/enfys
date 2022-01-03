@@ -7,7 +7,7 @@ type Props = {
 
 function Button({ children, ...props }: Props, ref: object) {
 	const className =
-		"px-4 py-2 rounded-md text-neutral-100 bg-emerald-500 transition hover:bg-emerald-600 active:bg-emerald-700 a-no-style";
+		"flex-shrink-0 px-4 py-2 rounded-md text-neutral-100 bg-emerald-500 transition hover:bg-emerald-600 active:bg-emerald-700 disabled:bg-neutral-300 dark:disabled:bg-neutral-500 a-no-style";
 
 	return createElement(
 		props.href ? "a" : "button",
