@@ -21,6 +21,15 @@ async function route(fastify) {
 		return { code };
 	});
 
+	fastify.get(
+		"/socket/:code",
+		{ schema: codeValidationSchema, websocket: true },
+		(connection, req) => {
+			const code = req.params.code;
+			if (!(code in rooms)) return connection.socket.close();
+		}
+	);
+
 	fastify.get("/:code", { schema: codeValidationSchema }, (req, res) => {
 		const code = req.params.code;
 		if (!(code in rooms)) return res.code(404).send(new Error("Room not found"));

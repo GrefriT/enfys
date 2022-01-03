@@ -4,7 +4,6 @@ const isDev = process.env.NODE_ENV !== "production";
 
 const fastify = require("fastify").default({
 	logger: {
-		level: "error",
 		prettyPrint: isDev
 			? {
 					translateTime: "HH:MM:ss Z",

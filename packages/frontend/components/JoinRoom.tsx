@@ -7,7 +7,7 @@ import Wrapper from "components/Wrapper";
 import Input from "components/Input";
 import fetcher from "lib/fetcher";
 
-function NameForm({ room, onReset }: { room?: Room; onReset: () => void }) {
+function JoinForm({ room, onReset }: { room?: Room; onReset: () => void }) {
 	const router = useRouter();
 	const [name, setName] = useState(localStorage.username || "");
 
@@ -44,7 +44,7 @@ export default function JoinRoom() {
 	const { room, isValidating } = useRoom(code);
 
 	return room || code === null ? (
-		<NameForm room={room} onReset={() => setCode("")} />
+		<JoinForm room={room} onReset={() => setCode("")} />
 	) : (
 		<Wrapper
 			title="Join room"
