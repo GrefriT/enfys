@@ -1,18 +1,13 @@
-import { useEffect } from "react";
 import { useRouter } from "next/router";
 import useRoom from "hooks/useRoom";
+import useRoomSocket from "hooks/useRoomSocket";
 import Head from "components/Head";
 
 function Room() {
 	const router = useRouter();
 	const { room, error } = useRoom(router.query.code as string);
 
-	useEffect(() => {
-		if (!room?.code) return;
-
-		const ws = new WebSocket("ws://localhost:9453/room/socket/" + room.code);
-		ws.onopen = console.log;
-	}, [room?.code]);
+	useRoomSocket(room?.code);
 
 	if (error) return error;
 	if (!room)
