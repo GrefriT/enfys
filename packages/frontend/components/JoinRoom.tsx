@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, FormEvent } from "react";
 import { useRouter } from "next/router";
 import useRoom, { Room } from "hooks/useRoom";
 import OTPInput from "components/OTPInput";
@@ -11,7 +11,8 @@ function JoinForm({ room, onReset }: { room?: Room; onReset: () => void }) {
 	const router = useRouter();
 	const [name, setName] = useState(localStorage.username || "");
 
-	function handleJoin() {
+	function handleJoin(e: FormEvent<HTMLFormElement>) {
+		e.preventDefault();
 		localStorage.username = name;
 
 		if (room?.code) router.push(`/room/${room.code}`);
@@ -25,6 +26,7 @@ function JoinForm({ room, onReset }: { room?: Room; onReset: () => void }) {
 		<Wrapper
 			title={room?.title || "Create new room"}
 			action={<Button onClick={onReset}>Join another room</Button>}
+			container={<form onSubmit={handleJoin} />}
 		>
 			<Input
 				value={name}
@@ -32,7 +34,7 @@ function JoinForm({ room, onReset }: { room?: Room; onReset: () => void }) {
 				maxLength={32}
 				placeholder="Enter your name / nickname"
 			/>
-			<Button onClick={handleJoin} disabled={!name}>
+			<Button type="submit" disabled={!name}>
 				Join room
 			</Button>
 		</Wrapper>
