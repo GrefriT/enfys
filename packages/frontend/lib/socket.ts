@@ -1,5 +1,6 @@
 export default class Socket {
 	public instance: WebSocket;
+	public id?: string;
 	private handlers: object;
 
 	constructor(path: string) {
@@ -9,7 +10,7 @@ export default class Socket {
 		this.instance.onmessage = this.handleMessage.bind(this);
 	}
 
-	add(type: string, callback: (body: object) => void) {
+	add(type: string, callback: (body) => void) {
 		this.handlers[type] = callback;
 		return this;
 	}
@@ -19,7 +20,7 @@ export default class Socket {
 		return this;
 	}
 
-	send(type: string, body: object) {
+	send(type: string, body?: object) {
 		this.instance.send(JSON.stringify({ type, body }));
 		return this;
 	}

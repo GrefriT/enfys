@@ -8,8 +8,8 @@ class Socket {
 			this.pingTimeout = setTimeout(() => this.close(), 3500);
 		}, 5000);
 
-		this.raw.onclose = () => clearInterval(pingInterval);
-		this.raw.onmessage = this.handleMessage.bind(this);
+		this.raw.on("close", () => clearInterval(pingInterval));
+		this.raw.on("message", this.handleMessage.bind(this));
 	}
 
 	add(type, callback) {
@@ -22,6 +22,11 @@ class Socket {
 		return this;
 	}
 
+	on(event, callback) {
+		this.raw.on(event, callback);
+		return this;
+	}
+
 	send(type, body) {
 		this.raw.send(JSON.stringify({ type, body }));
 		return this;
@@ -31,9 +36,10 @@ class Socket {
 		this.raw.close();
 	}
 
-	handleMessage(event) {
-		if (event.data === "pong") return clearTimeout(this.pingTimeout);
-		const data = JSON.parse(event.data);
+	handleMessage(buffer) {
+		const rawData = buffer.toString();
+		if (rawData === "pong") return clearTimeout(this.pingTimeout);
+		const data = JSON.parse(rawData.toString());
 		this.handlers[data.type]?.(data.body);
 	}
 }

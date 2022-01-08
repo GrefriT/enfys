@@ -5,7 +5,10 @@ export default function Terms() {
 	return (
 		<>
 			<Head title="Terms of Service" />
-			<Wrapper title="Terms and Conditions of Use" className="prose dark:prose-invert">
+			<Wrapper
+				title="Terms and Conditions of Use"
+				container={<article className="prose dark:prose-invert" />}
+			>
 				<h2>1. Terms</h2>
 				<p>
 					By accessing this Website, accessible from https://enfys.app, you are agreeing

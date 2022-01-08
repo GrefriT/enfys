@@ -7,7 +7,35 @@ class Room {
 		this.peers = {};
 	}
 
-	peer(socket) {}
+	get users() {
+		return Object.keys(this.peers);
+	}
+
+	peer(socket) {
+		const id = generateCode(24);
+
+		this.peers[id] = socket;
+		socket.send("id", id).send(
+			"all-users",
+			this.users.filter((user) => user !== id)
+		);
+
+		socket
+			.add("send-signal", (data) =>
+				this.to(data.calleeId).send("user-joined", {
+					signal: data.signal,
+					callerId: data.callerId,
+				})
+			)
+			.add("return-signal", (data) =>
+				this.to(data.callerId).send("receive-signal", { signal: data.signal, id })
+			)
+			.on("close", () => delete this.peers[id]);
+	}
+
+	to(peerId) {
+		return this.peers[peerId];
+	}
 
 	toJSON() {
 		return { code: this.code, title: this.title };

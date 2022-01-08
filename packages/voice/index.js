@@ -6,6 +6,7 @@ const fastify = require("fastify").default({
 	logger: {
 		prettyPrint: isDev
 			? {
+					colorize: true,
 					translateTime: "HH:MM:ss Z",
 					ignore: "pid,hostname,reqId,responseTime,req,res",
 					messageFormat: "{msg} {req.url}",
@@ -28,3 +29,6 @@ fastify.listen(9453, (err) => {
 });
 
 new TURN().start();
+
+process.on("uncaughtException", (error) => fastify.log.error(error));
+process.on("unhandledRejection", (error) => fastify.log.error(error));
