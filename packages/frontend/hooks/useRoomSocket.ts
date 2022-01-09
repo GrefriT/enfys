@@ -2,6 +2,17 @@ import { useState, useEffect, useRef } from "react";
 import Peer from "simple-peer";
 import Socket from "lib/socket";
 
+const config = {
+	iceServers: [
+		{
+			urls: ["stun:stun.l.google.com:19302", "stun:stun1.l.google.com:19302"],
+		},
+	],
+};
+
+if (process.env.NODE_ENV === "production")
+	config.iceServers[0].urls.push(`turn:${process.env.NEXT_PUBLIC_TURN_SERVER}`);
+
 export default function useRoomSocket(code: string) {
 	const socket = useRef<Socket>();
 	const stream = useRef<MediaStream>();
@@ -46,7 +57,7 @@ export default function useRoomSocket(code: string) {
 	}, [code]);
 
 	function createPeer(calleeId: string, callerId: string, stream: MediaStream) {
-		const peer = new Peer({ initiator: true, stream });
+		const peer = new Peer({ initiator: true, stream, config });
 		peer.on("signal", (signal) =>
 			socket.current.send("send-signal", { calleeId, callerId, signal })
 		);
@@ -54,7 +65,7 @@ export default function useRoomSocket(code: string) {
 	}
 
 	function addPeer(incomingSignal: any, callerId: string, stream: MediaStream) {
-		const peer = new Peer({ stream });
+		const peer = new Peer({ stream, config });
 
 		peer.on("signal", (signal) => socket.current.send("return-signal", { signal, callerId }));
 		peer.signal(incomingSignal);
