@@ -21,14 +21,11 @@ class Room {
 		);
 
 		socket
-			.add("send-signal", (data) =>
-				this.to(data.calleeId).send("user-joined", {
-					signal: data.signal,
-					callerId: data.callerId,
-				})
+			.add("send-signal", ({ signal, calleeId, callerId }) =>
+				this.to(calleeId).send("user-joined", { signal, callerId })
 			)
-			.add("return-signal", (data) =>
-				this.to(data.callerId).send("receive-signal", { signal: data.signal, id })
+			.add("return-signal", ({ signal, callerId }) =>
+				this.to(callerId).send("receive-signal", { signal, id })
 			)
 			.on("close", () => delete this.peers[id]);
 	}

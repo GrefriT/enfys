@@ -14,7 +14,7 @@ export default class Socket {
 		this.instance.onmessage = this.handleMessage.bind(this);
 	}
 
-	add(type: string, callback: (body) => void) {
+	add(type: string, callback: (body: any) => void) {
 		this.handlers[type] = callback;
 		return this;
 	}
@@ -24,7 +24,7 @@ export default class Socket {
 		return this;
 	}
 
-	send(type: string, body?: object) {
+	send(type: string, body?: any) {
 		this.instance.send(JSON.stringify({ type, body }));
 		return this;
 	}

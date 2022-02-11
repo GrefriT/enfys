@@ -29,19 +29,29 @@ function Room() {
 			</>
 		);
 
-	function handleUserVideo(video: HTMLVideoElement) {
-		if (!video) return;
-		video.srcObject = stream;
-	}
+	const handleUserVideo = (video: HTMLVideoElement) => video && (video.srcObject = stream);
 
 	return (
 		<>
 			<Head title={`Room ${room.code}`} />
-			<div className="grid grid-cols-8 gap-4 p-8">
-				{stream && <video ref={handleUserVideo} muted autoPlay playsInline />}
-				{peers.map((peer, index) => (
-					<PeerVideo peer={peer} key={index} />
-				))}
+			<div className="flex flex-col h-screen">
+				<div className="flex-1 grid grid-cols-8 gap-4 p-8">
+					{peers.map((peer) => (
+						<PeerVideo peer={peer} key={peer.id} />
+					))}
+				</div>
+				<div>
+					{stream && (
+						<video
+							width={200}
+							height={150}
+							ref={handleUserVideo}
+							muted
+							autoPlay
+							playsInline
+						/>
+					)}
+				</div>
 			</div>
 		</>
 	);
