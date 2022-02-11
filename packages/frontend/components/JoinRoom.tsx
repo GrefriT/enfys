@@ -1,4 +1,4 @@
-import { useState, FormEvent } from "react";
+import { useState, FormEvent, useEffect } from "react";
 import { useRouter } from "next/router";
 import useRoom, { Room } from "hooks/useRoom";
 import OTPInput from "components/OTPInput";
@@ -7,56 +7,67 @@ import Wrapper from "components/Wrapper";
 import Input from "components/Input";
 import fetcher from "lib/fetcher";
 
-function JoinForm({ room, onReset }: { room?: Room; onReset: () => void }) {
+function CreateForm({ onReset }: { room?: Room; onReset: () => void }) {
 	const router = useRouter();
-	const [name, setName] = useState(localStorage.username || "");
+	const [title, setTitle] = useState("");
 
 	function handleJoin(e: FormEvent<HTMLFormElement>) {
 		e.preventDefault();
-		localStorage.username = name;
-
-		if (room?.code) router.push(`/room/${room.code}`);
-		else
-			fetcher("/room/create", { method: "POST" }).then(({ code }) =>
-				router.push(`/room/${code}`)
-			);
+		fetcher("/room/create", { method: "POST", body: { title } }).then(({ code }) =>
+			router.push(`/room/${code}`)
+		);
 	}
 
 	return (
 		<Wrapper
-			title={room?.title || "Create new room"}
+			title="Create new room"
 			action={<Button onClick={onReset}>Join another room</Button>}
 			container={<form onSubmit={handleJoin} />}
 		>
 			<Input
-				value={name}
-				onChange={(e) => setName(e.target.value.trimStart())}
+				value={title}
+				onChange={(e) => setTitle(e.target.value.trimStart())}
 				maxLength={32}
-				placeholder="Enter your name / nickname"
+				placeholder="Enter room topic / title"
 			/>
-			<Button type="submit" disabled={!name}>
-				Join room
+			<Button type="submit" disabled={!title}>
+				Create room
 			</Button>
+		</Wrapper>
+	);
+}
+
+function JoinForm({ code, setCode }: { code: string; setCode: (state: string) => void }) {
+	const router = useRouter();
+	const { room, isValidating } = useRoom(code);
+	const isJoining = !!room || isValidating;
+
+	useEffect(() => {
+		if (!room) return;
+		router.push(`/room/${room.code}`);
+	}, [room, router]);
+
+	return (
+		<Wrapper
+			title="Join room"
+			action={
+				<Button disabled={isJoining} onClick={() => setCode(null)}>
+					or create new
+				</Button>
+			}
+		>
+			<OTPInput disabled={isJoining} value={code} onChange={setCode} length={6} />
+			{room && <div className="text-center opacity-75">Joining room {room.title}...</div>}
 		</Wrapper>
 	);
 }
 
 export default function JoinRoom() {
 	const [code, setCode] = useState("");
-	const { room, isValidating } = useRoom(code);
 
-	return room || code === null ? (
-		<JoinForm room={room} onReset={() => setCode("")} />
+	return code === null ? (
+		<CreateForm onReset={() => setCode("")} />
 	) : (
-		<Wrapper
-			title="Join room"
-			action={
-				<Button disabled={isValidating} onClick={() => setCode(null)}>
-					or create new
-				</Button>
-			}
-		>
-			<OTPInput disabled={isValidating} value={code} onChange={setCode} length={6} />
-		</Wrapper>
+		<JoinForm code={code} setCode={setCode} />
 	);
 }

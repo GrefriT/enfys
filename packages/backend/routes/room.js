@@ -10,7 +10,7 @@ const codeValidationSchema = {
 async function route(fastify) {
 	const rooms = new Rooms();
 
-	fastify.post("/create", () => ({ code: rooms.create() }));
+	fastify.post("/create", (req) => ({ code: rooms.create(req.body.title) }));
 
 	fastify.get(
 		"/:code/socket",

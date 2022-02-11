@@ -27,11 +27,18 @@ class Room {
 			.add("return-signal", ({ signal, callerId }) =>
 				this.to(callerId).send("receive-signal", { signal, id })
 			)
-			.on("close", () => delete this.peers[id]);
+			.on("close", () => {
+				delete this.peers[id];
+				this.broadcast("user-disconnected", { id });
+			});
 	}
 
 	to(peerId) {
 		return this.peers[peerId];
+	}
+
+	broadcast(type, body) {
+		Object.values(this.peers).forEach((peer) => peer.send(type, body));
 	}
 
 	toJSON() {
