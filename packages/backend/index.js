@@ -15,11 +15,13 @@ const fastify = require("fastify").default({
 	},
 });
 
-fastify.register(require("fastify-cors"), {
-	origin: isDev ? "http://localhost:3000" : "https://enfys.app",
-});
+if (isDev)
+	fastify.register(require("fastify-cors"), {
+		origin: "http://localhost:3000",
+	});
+
 fastify.register(require("fastify-websocket"));
-fastify.register(require("./routes/room"), { prefix: "/room" });
+fastify.register(require("./routes/room"), { prefix: "/api/room" });
 
 fastify.listen(9453, (err) => {
 	if (err) {
