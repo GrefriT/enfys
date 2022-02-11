@@ -4,11 +4,10 @@ export default class Socket {
 	private handlers: object;
 
 	constructor(path: string) {
-		const url = `ws${location.protocol === "https:" ? "s" : ""}://${
-			process.env.NEXT_PUBLIC_API_DOMAIN
-		}${path}`;
+		const url = new URL(process.env.NEXT_PUBLIC_API_URL);
+		url.protocol = `ws${url.protocol === "https:" ? "s" : ""}:`;
 
-		this.instance = new WebSocket(url);
+		this.instance = new WebSocket(`${url}${path}`);
 		this.handlers = {};
 
 		this.instance.onmessage = this.handleMessage.bind(this);
