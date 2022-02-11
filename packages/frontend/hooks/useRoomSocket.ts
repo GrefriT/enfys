@@ -4,16 +4,16 @@ import Socket from "lib/socket";
 
 type Client = Peer.Instance & { id?: string };
 
-const config = {
-	iceServers: [
-		{
-			urls: ["stun:stun.l.google.com:19302", "stun:stun1.l.google.com:19302"],
-		},
-	],
+const config: any = {
+	iceServers: [{ urls: ["stun:stun.l.google.com:19302", "stun:stun1.l.google.com:19302"] }],
 };
 
 if (process.env.NODE_ENV === "production")
-	config.iceServers[0].urls.push(`turn:${process.env.NEXT_PUBLIC_TURN_SERVER}`);
+	config.iceServers.push({
+		urls: `turn:${process.env.NEXT_PUBLIC_TURN_SERVER}`,
+		credential: "any",
+		username: "any",
+	});
 
 export default function useRoomSocket(code: string) {
 	const socket = useRef<Socket>();
