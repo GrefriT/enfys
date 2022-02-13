@@ -8,10 +8,7 @@ import VideocamOff from "@icons/videocam-off.svg";
 
 function VideoPlaceholder() {
 	return (
-		<div
-			className="flex flex-col items-center justify-center space-y-4 rounded-md bg-neutral-100 dark:bg-neutral-600"
-			style={{ width: 480, height: 270 }}
-		>
+		<div className="flex flex-col items-center aspect-video justify-center space-y-4 rounded-md bg-neutral-100 dark:bg-neutral-600">
 			<VideocamOff className="opacity-75" width={64} height={64} />
 			<span className="text-center opacity-75">Your camera is disabled</span>
 		</div>
@@ -50,16 +47,20 @@ export default function CameraSelect({ deviceId, onChange }: Props) {
 	}
 
 	return (
-		<div className="p-4 space-y-4 border-r border-neutral-200 dark:border-neutral-600">
+		<div className="flex-1 p-4 max-w-lg space-y-8">
 			{stream ? (
-				<UserVideo stream={stream} width={480} height={270} className="rounded-md" />
+				<UserVideo
+					stream={stream}
+					className="rounded-md object-cover aspect-video w-full"
+				/>
 			) : (
 				<VideoPlaceholder />
 			)}
-			<div className="flex items-center justify-between">
+			<div className="flex items-center justify-between gap-4">
 				<Switch checked={enabled} onChange={handleVideoChange} />
 				{!!cameras?.length && (
 					<Select
+						className="flex-1 w-60"
 						disabled={!enabled}
 						value={deviceId}
 						onChange={(e) => captureCameraStream(e.target.value)}

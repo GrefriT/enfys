@@ -18,7 +18,10 @@ export default function CallRoom({ room, userConfig }: Props) {
 
 	return (
 		<div className="flex flex-col h-screen">
-			<div id="enfys-peers" className="flex-1 grid grid-cols-6 gap-4 p-8">
+			<div
+				id="enfys-peers"
+				className="flex-1 flex items-center justify-center flex-wrap gap-4 p-8"
+			>
 				{users.map((user) => (
 					<PeerVideo peer={user} key={user.id} />
 				))}

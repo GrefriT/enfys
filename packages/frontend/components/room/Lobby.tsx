@@ -23,14 +23,14 @@ export default function Lobby({ room, onJoin }: Props) {
 		setConfig((config) => ({ ...config, ...value }));
 
 	return (
-		<div className="flex items-center justify-center h-screen">
+		<div className="flex items-center justify-center p-4 h-screen">
 			<div className="bg-white dark:bg-neutral-700 rounded-2xl shadow-md">
-				<div className="flex border-b border-neutral-200 dark:border-neutral-600">
+				<div className="flex flex-wrap border-b justify-center border-neutral-200 dark:border-neutral-600">
 					<CameraSelect
 						deviceId={config.camera}
 						onChange={(camera) => updateConfig({ camera })}
 					/>
-					<div className="p-4 space-y-8">
+					<div className="flex-1 max-w-lg p-4 space-y-8">
 						<div className="flex items-center justify-between gap-4">
 							<h1 className="font-semibold text-2xl tracking-wide">{room.title}</h1>
 							<small className="opacity-75">{room.code}</small>

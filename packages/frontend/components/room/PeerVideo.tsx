@@ -23,7 +23,7 @@ export default function PeerVideo({ peer }: { peer: Instance }) {
 
 	return (
 		<video
-			className={`rounded-md border-2 ${
+			className={`flex-1 rounded-md border-2 ${
 				speaking ? "border-emerald-600" : "border-transparent"
 			}`}
 			ref={ref}
