@@ -1,6 +1,5 @@
 export default class Socket {
 	public instance: WebSocket;
-	public id?: string;
 	private handlers: object;
 
 	constructor(path: string) {
