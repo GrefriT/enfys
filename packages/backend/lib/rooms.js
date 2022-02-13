@@ -1,7 +1,10 @@
 const generateCode = require("./generate-code");
 
+const ROOM_TTL = 1000 * 60 * 5;
+
 class Room {
-	constructor(code, title = "Untitled room") {
+	constructor(rooms, code, title) {
+		this.rooms = rooms;
 		this.code = code;
 		this.title = title;
 		this.peers = {};
@@ -11,7 +14,13 @@ class Room {
 		return Object.keys(this.peers);
 	}
 
+	get sockets() {
+		return Object.values(this.peers);
+	}
+
 	peer(socket) {
+		clearTimeout(this.destroyTimeout);
+
 		const id = generateCode(24);
 
 		this.peers[id] = socket;
@@ -29,7 +38,13 @@ class Room {
 			)
 			.on("close", () => {
 				delete this.peers[id];
-				this.broadcast("user-disconnected", { id });
+
+				if (!this.users.length) {
+					this.destroyTimeout = setTimeout(() => this.rooms.delete(this.code), ROOM_TTL);
+					return;
+				}
+
+				this.rooms.this.broadcast("user-disconnected", { id });
 			});
 	}
 
@@ -38,7 +53,7 @@ class Room {
 	}
 
 	broadcast(type, body) {
-		Object.values(this.peers).forEach((peer) => peer.send(type, body));
+		this.sockets.forEach((peer) => peer.send(type, body));
 	}
 
 	toJSON() {
@@ -63,8 +78,12 @@ class Rooms {
 
 	create(title) {
 		const code = this.generateRoomCode();
-		this.store[code] = new Room(code, title);
+		this.store[code] = new Room(this, code, title);
 		return code;
+	}
+
+	delete(code) {
+		return delete this.store[code];
 	}
 
 	exists(code) {

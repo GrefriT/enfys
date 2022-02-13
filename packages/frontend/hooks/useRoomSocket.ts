@@ -79,7 +79,9 @@ export default function useRoomSocket(code: string, userConfig: UserConfig) {
 				setPeers((peers) => peers.filter((peer) => peer.id !== data.id));
 			}
 
-			socket.current = new Socket(`/room/${code}/socket?name=${userConfig.name}`);
+			socket.current = new Socket(
+				`/room/${code}/socket?name=${encodeURIComponent(userConfig.name)}`
+			);
 			socket.current
 				.add("id", (id) => (socket.current.id = id))
 				.add("all-users", handleAllUsers)

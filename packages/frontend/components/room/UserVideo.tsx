@@ -1,11 +1,15 @@
-import type { ComponentPropsWithoutRef } from "react";
+import { useEffect, useRef, ComponentPropsWithoutRef } from "react";
 
 type Props = {
 	stream: MediaStream;
 } & ComponentPropsWithoutRef<"video">;
 
 export default function UserVideo({ stream, ...props }: Props) {
-	const handleUserVideo = (video: HTMLVideoElement) => video && (video.srcObject = stream);
+	const video = useRef<HTMLVideoElement>();
 
-	return <video key={stream.id} ref={handleUserVideo} muted autoPlay playsInline {...props} />;
+	useEffect(() => {
+		video.current.srcObject = stream;
+	}, [stream]);
+
+	return <video ref={video} muted autoPlay playsInline {...props} />;
 }
