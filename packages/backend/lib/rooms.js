@@ -1,6 +1,20 @@
 const generateCode = require("./generate-code");
+const Socket = require("./socket");
 
 const ROOM_TTL = 1000 * 60 * 5;
+
+class User extends Socket {
+	constructor(socket, name) {
+		super(socket);
+
+		this.id = generateCode(24);
+		this.name = name;
+	}
+
+	toJSON() {
+		return { id: this.id, name: this.name };
+	}
+}
 
 class Room {
 	constructor(rooms, code, title) {
@@ -11,40 +25,35 @@ class Room {
 	}
 
 	get users() {
-		return Object.keys(this.peers);
-	}
-
-	get sockets() {
 		return Object.values(this.peers);
 	}
 
-	peer(socket) {
+	onPeer(rawSocket, name) {
 		clearTimeout(this.destroyTimeout);
 
-		const id = generateCode(24);
+		const user = new User(rawSocket, name);
 
-		this.peers[id] = socket;
-		socket.send("id", id).send(
+		this.peers[user.id] = user;
+		user.send(
 			"all-users",
-			this.users.filter((user) => user !== id)
+			this.users.filter((peer) => peer.id !== user.id)
 		);
 
-		socket
-			.add("send-signal", ({ signal, calleeId, callerId }) =>
-				this.to(calleeId).send("user-joined", { signal, callerId })
-			)
+		user.add("send-signal", ({ signal, calleeId }) =>
+			this.to(calleeId).send("user-joined", { signal, caller: user })
+		)
 			.add("return-signal", ({ signal, callerId }) =>
-				this.to(callerId).send("receive-signal", { signal, id })
+				this.to(callerId).send("receive-signal", { signal, id: user.id })
 			)
 			.on("close", () => {
-				delete this.peers[id];
+				delete this.peers[user.id];
 
 				if (!this.users.length) {
 					this.destroyTimeout = setTimeout(() => this.rooms.delete(this.code), ROOM_TTL);
 					return;
 				}
 
-				this.rooms.this.broadcast("user-disconnected", { id });
+				this.broadcast("user-disconnected", user.id);
 			});
 	}
 
@@ -53,7 +62,7 @@ class Room {
 	}
 
 	broadcast(type, body) {
-		this.sockets.forEach((peer) => peer.send(type, body));
+		this.users.forEach((peer) => peer.send(type, body));
 	}
 
 	toJSON() {

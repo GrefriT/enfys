@@ -1,9 +1,21 @@
 import { useState, useEffect, useRef } from "react";
-import Peer from "simple-peer";
+import Peer, { Options } from "simple-peer";
 import Socket from "lib/socket";
 import type { UserConfig } from "components/room/Lobby";
 
-type Client = Peer.Instance & { id?: string };
+type UserData = { id: string; name: string };
+
+class User extends Peer {
+	public readonly id: string;
+	public readonly name: string;
+
+	constructor(peerConfig: Options, data: UserData) {
+		super(peerConfig);
+
+		this.id = data.id;
+		this.name = data.name;
+	}
+}
 
 const config: any = {
 	iceServers: [{ urls: ["stun:stun.l.google.com:19302", "stun:stun1.l.google.com:19302"] }],
@@ -19,32 +31,30 @@ if (process.env.NODE_ENV === "production")
 export default function useRoomSocket(code: string, userConfig: UserConfig) {
 	const socket = useRef<Socket>();
 	const stream = useRef<MediaStream>();
-	const peersRef = useRef<Record<string, Client>>({});
-	const [peers, setPeers] = useState<Client[]>([]);
+	const peersRef = useRef<Record<string, User>>({});
+	const [users, setUsers] = useState<User[]>([]);
 
 	useEffect(() => {
 		if (!code) return;
 
-		function createPeer(calleeId: string, callerId: string, stream: MediaStream) {
-			const peer: Client = new Peer({ initiator: true, stream, config });
-			peer.id = calleeId;
+		function createUser(userData: UserData, stream: MediaStream) {
+			const user = new User({ initiator: true, stream, config }, userData);
 
-			peer.on("signal", (signal) =>
-				socket.current.send("send-signal", { calleeId, callerId, signal })
+			user.on("signal", (signal) =>
+				socket.current.send("send-signal", { calleeId: user.id, signal })
 			);
 
-			return peer;
+			return user;
 		}
 
-		function addPeer(incomingSignal: any, callerId: string, stream: MediaStream) {
-			const peer: Client = new Peer({ stream, config });
-			peer.id = callerId;
+		function addUser(incomingSignal: any, caller: UserData, stream: MediaStream) {
+			const user = new User({ stream, config }, caller);
 
-			peer.on("signal", (signal) =>
-				socket.current.send("return-signal", { signal, callerId })
+			user.on("signal", (signal) =>
+				socket.current.send("return-signal", { signal, callerId: user.id })
 			).signal(incomingSignal);
 
-			return peer;
+			return user;
 		}
 
 		const signalPeer = (id: string, signal: any) => peersRef.current[id].signal(signal);
@@ -55,35 +65,34 @@ export default function useRoomSocket(code: string, userConfig: UserConfig) {
 				video: { deviceId: userConfig.camera },
 			});
 
-			function handleAllUsers(users: string[]) {
-				const peers = users.map((user) => {
-					const peer = createPeer(user, socket.current.id, stream.current);
-					peersRef.current[peer.id] = peer;
-					return peer;
+			function handleAllUsers(usersData: UserData[]) {
+				const users = usersData.map((userData) => {
+					const user = createUser(userData, stream.current);
+					peersRef.current[user.id] = user;
+					return user;
 				});
-				setPeers(peers);
+				setUsers(users);
 			}
 
 			function handleUserJoin(data: any) {
-				if (data.callerId in peersRef.current)
-					return signalPeer(data.callerId, data.signal);
+				if (data.caller.id in peersRef.current)
+					return signalPeer(data.caller.id, data.signal);
 
-				const peer = addPeer(data.signal, data.callerId, stream.current);
-				peersRef.current[peer.id] = peer;
-				setPeers((peers) => [...peers, peer]);
+				const user = addUser(data.signal, data.caller, stream.current);
+				peersRef.current[user.id] = user;
+				setUsers((users) => [...users, user]);
 			}
 
-			function handleUserDisconnect(data: any) {
-				peersRef.current[data.id].destroy();
-				delete peersRef.current[data.id];
-				setPeers((peers) => peers.filter((peer) => peer.id !== data.id));
+			function handleUserDisconnect(id: string) {
+				peersRef.current[id].destroy();
+				delete peersRef.current[id];
+				setUsers((users) => users.filter((user) => user.id !== id));
 			}
 
 			socket.current = new Socket(
 				`/room/${code}/socket?name=${encodeURIComponent(userConfig.name)}`
 			);
 			socket.current
-				.add("id", (id) => (socket.current.id = id))
 				.add("all-users", handleAllUsers)
 				.add("user-joined", handleUserJoin)
 				.add("user-disconnected", handleUserDisconnect)
@@ -96,5 +105,5 @@ export default function useRoomSocket(code: string, userConfig: UserConfig) {
 		};
 	}, [code, userConfig]);
 
-	return { peers, stream: stream.current };
+	return { users, stream: stream.current };
 }

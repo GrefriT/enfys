@@ -1,9 +1,11 @@
 const Rooms = require("../lib/rooms");
-const Socket = require("../lib/socket");
 
 const codeValidationSchema = {
 	params: {
 		code: { type: "string", pattern: "[A-Z\\d]{6}" },
+	},
+	query: {
+		name: { type: "string", maxLength: 32 },
 	},
 };
 
@@ -18,7 +20,7 @@ async function route(fastify) {
 		(connection, req) => {
 			const room = rooms.get(req.params.code);
 			if (!room) return connection.socket.close();
-			room.peer(new Socket(connection.socket));
+			room.onPeer(connection.socket, req.query.name);
 		}
 	);
 

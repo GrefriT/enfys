@@ -25,13 +25,13 @@ type Props = {
 };
 
 export default function CallRoom({ room, userConfig }: Props) {
-	const { peers, stream } = useRoomSocket(room.code, userConfig);
+	const { users, stream } = useRoomSocket(room.code, userConfig);
 
 	return (
 		<div className="flex flex-col h-screen">
 			<div id="enfys-peers" className="flex-1 grid grid-cols-6 gap-4 p-8">
-				{peers.map((peer) => (
-					<PeerVideo peer={peer} key={peer.id} />
+				{users.map((user) => (
+					<PeerVideo peer={user} key={user.id} />
 				))}
 			</div>
 			<div className="flex items-end">
@@ -45,7 +45,7 @@ export default function CallRoom({ room, userConfig }: Props) {
 						<LeaveButton />
 					</div>
 					<div className="flex items-center gap-4">
-						{peers.length > 0 && <FullscreenButton />}
+						{users.length > 0 && <FullscreenButton />}
 						<div>
 							<h5 className="font-semibold text-lg">{room.title}</h5>
 							<span className="opacity-75">{room.code}</span>
