@@ -30,7 +30,7 @@ fastify.listen(9453, (err) => {
 	}
 });
 
-new TURN({ debugLevel: "ALL" }).start();
+new TURN().start();
 
 process.on("uncaughtException", (error) => fastify.log.error(error));
 process.on("unhandledRejection", (error) => fastify.log.error(error));

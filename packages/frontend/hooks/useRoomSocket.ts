@@ -38,7 +38,7 @@ export default function useRoomSocket(code: string, userConfig: UserConfig) {
 		if (!code) return;
 
 		function createUser(userData: UserData, stream: MediaStream) {
-			const user = new User({ initiator: true, stream, config }, userData);
+			const user = new User({ initiator: true, trickle: false, stream, config }, userData);
 
 			user.on("signal", (signal) =>
 				socket.current.send("send-signal", { calleeId: user.id, signal })
@@ -48,7 +48,7 @@ export default function useRoomSocket(code: string, userConfig: UserConfig) {
 		}
 
 		function addUser(incomingSignal: any, caller: UserData, stream: MediaStream) {
-			const user = new User({ stream, config }, caller);
+			const user = new User({ stream, trickle: false, config }, caller);
 
 			user.on("signal", (signal) =>
 				socket.current.send("return-signal", { signal, callerId: user.id })
@@ -75,8 +75,8 @@ export default function useRoomSocket(code: string, userConfig: UserConfig) {
 			}
 
 			function handleUserJoin(data: any) {
-				if (data.caller.id in peersRef.current)
-					return signalPeer(data.caller.id, data.signal);
+				// if (data.caller.id in peersRef.current)
+				// 	return signalPeer(data.caller.id, data.signal);
 
 				const user = addUser(data.signal, data.caller, stream.current);
 				peersRef.current[user.id] = user;
