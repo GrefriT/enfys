@@ -1,5 +1,3 @@
-import { useEffect, useRef } from "react";
-import type { Instance } from "simple-peer";
 import type { Room } from "hooks/useRoom";
 import useRoomSocket from "hooks/useRoomSocket";
 import type { UserConfig } from "components/room/Lobby";
@@ -8,16 +6,7 @@ import LeaveButton from "components/room/LeaveButton";
 import FullscreenButton from "components/room/FullscreenButton";
 import WebcamButton from "components/room/WebcamButton";
 import UserVideo from "components/room/UserVideo";
-
-function PeerVideo({ peer }: { peer: Instance }) {
-	const ref = useRef<HTMLVideoElement>();
-
-	useEffect(() => {
-		peer.on("stream", (stream) => (ref.current.srcObject = stream));
-	}, [peer]);
-
-	return <video className="rounded-md" ref={ref} autoPlay playsInline />;
-}
+import PeerVideo from "components/room/PeerVideo";
 
 type Props = {
 	room: Room;

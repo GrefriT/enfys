@@ -61,7 +61,7 @@ export default function useRoomSocket(code: string, userConfig: UserConfig) {
 
 		(async () => {
 			stream.current = await navigator.mediaDevices.getUserMedia({
-				audio: { deviceId: userConfig.mic },
+				audio: { deviceId: userConfig.mic, echoCancellation: true, noiseSuppression: true },
 				video: { deviceId: userConfig.camera },
 			});
 

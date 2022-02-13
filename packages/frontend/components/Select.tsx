@@ -7,7 +7,7 @@ type Props = {
 export default function Select({ children, ...props }: Props) {
 	return (
 		<select
-			className="rounded-md px-1 py-2 truncate max-w-xs bg-neutral-200 dark:bg-neutral-900"
+			className="rounded-md px-1 py-2 truncate max-w-xs bg-neutral-200 dark:bg-neutral-900 disabled:opacity-75"
 			{...props}
 		>
 			{children}
