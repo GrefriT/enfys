@@ -8,7 +8,7 @@ export default function useRoom(code: string): {
 	isValidating: boolean;
 	error?: string;
 } {
-	const { data, isValidating } = useSWR(code?.length === 6 ? `/room/${code}` : null, { fetcher });
+	const { data, isValidating } = useSWR(code?.length === 6 ? `/room/${code}` : null, fetcher);
 
 	return {
 		room: data?.code && data,

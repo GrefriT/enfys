@@ -9,6 +9,8 @@ export default function MicButton({ stream }: Props) {
 	const [enabled, setEnabled] = useState(true);
 
 	function handleToggle() {
+		if (!stream) return;
+
 		setEnabled((enabled) => {
 			stream.getAudioTracks()[0].enabled = !enabled;
 			return !enabled;
