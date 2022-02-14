@@ -32,7 +32,7 @@ export default function ToggleButton({ stream, addTrack, mode = "audio", OnIcon,
 		<button
 			onClick={handleToggle}
 			className={`p-4 rounded-full shadow-md transition ${
-				enabled ? "bg-white dark:bg-neutral-700" : "bg-red-600"
+				enabled ? "bg-white dark:bg-neutral-700" : "bg-red-600 text-white"
 			}`}
 		>
 			{enabled ? <OnIcon /> : <OffIcon />}

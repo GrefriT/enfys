@@ -80,7 +80,7 @@ export default function Terms() {
 					notice. By using this Website, you are agreeing to be bound by the current
 					version of these Terms and Conditions of Use.
 				</p>
-				<h2>9. Governing Law</h2>
+				<h2>8. Governing Law</h2>
 				<p>
 					Any claim related to Enfys Website shall be governed by the laws of Ukraine
 					without regards to its conflict of law provisions.

@@ -27,12 +27,22 @@ function Users({ users }: { users: User[] }) {
 	);
 }
 
+function AlonePlaceholder({ code }: { code: string }) {
+	return (
+		<div className="min-h-0 flex-1 flex flex-col justify-center text-center gap-4 p-4">
+			<h1 className="text-4xl font-semibold">You are alone in the room 😭</h1>
+			<div className="opacity-75">Invite people by this link 🤩</div>
+			<div className="text-lg text-emerald-500">https://enfys.app/room/{code}</div>
+		</div>
+	);
+}
+
 export default function CallRoom({ room, userConfig }: Props) {
 	const { users, stream, addTrack } = useRoomSocket(room.code, userConfig);
 
 	return (
 		<div className="flex flex-col h-screen">
-			<Users users={users} />
+			{users.length ? <Users users={users} /> : <AlonePlaceholder code={room.code} />}
 			<div className="flex items-end">
 				{stream && <UserVideo className="rounded-tr-lg" width={200} stream={stream} />}
 				<div className="flex justify-between flex-1 px-8 py-4">
