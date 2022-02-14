@@ -47,7 +47,7 @@ export default function CameraSelect({ deviceId, onChange }: Props) {
 	}
 
 	return (
-		<div className="flex-1 p-4 max-w-lg space-y-8">
+		<div className="w-96 max-w-full p-4 space-y-8">
 			{stream ? (
 				<UserVideo
 					stream={stream}
@@ -59,18 +59,19 @@ export default function CameraSelect({ deviceId, onChange }: Props) {
 			<div className="flex items-center justify-between gap-4">
 				<Switch checked={enabled} onChange={handleVideoChange} />
 				{!!cameras?.length && (
-					<Select
-						className="flex-1 w-60"
-						disabled={!enabled}
-						value={deviceId}
-						onChange={(e) => captureCameraStream(e.target.value)}
-					>
-						{cameras.map((camera) => (
-							<option value={camera.deviceId} key={camera.deviceId}>
-								{camera.label}
-							</option>
-						))}
-					</Select>
+					<div className="flex-1">
+						<Select
+							disabled={!enabled}
+							value={deviceId}
+							onChange={(e) => captureCameraStream(e.target.value)}
+						>
+							{cameras.map((camera) => (
+								<option value={camera.deviceId} key={camera.deviceId}>
+									{camera.label}
+								</option>
+							))}
+						</Select>
+					</div>
 				)}
 			</div>
 		</div>

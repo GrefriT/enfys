@@ -29,12 +29,11 @@ export default function MicSelect({ deviceId, onChange }: Props) {
 	return (
 		<div className="space-y-4">
 			<div className="flex items-center justify-between gap-8">
-				<span className="font-semibold text-lg whitespace-nowrap">Select microphone</span>
+				<span className="font-semibold text-lg whitespace-nowrap">Enable microphone</span>
 				<Switch checked={enabled} onChange={handleSwitchChange} />
 			</div>
 			{!!mics?.length && (
 				<Select
-					className="w-full"
 					value={deviceId}
 					onChange={(e) => handleMicChange(e.target.value)}
 					disabled={!enabled}
