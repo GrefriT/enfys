@@ -62,7 +62,12 @@ export default function useRoomSocket(code: string, userConfig: UserConfig) {
 		(async () => {
 			const mediaConstraints: MediaStreamConstraints = {};
 
-			if (userConfig.mic) mediaConstraints.audio = { deviceId: userConfig.mic };
+			if (userConfig.mic)
+				mediaConstraints.audio = {
+					deviceId: userConfig.mic,
+					echoCancellation: true,
+					noiseSuppression: true,
+				};
 			if (userConfig.camera) mediaConstraints.video = { deviceId: userConfig.camera };
 
 			if (Object.keys(mediaConstraints).length)
