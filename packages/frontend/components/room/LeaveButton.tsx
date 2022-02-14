@@ -8,7 +8,7 @@ export default function LeaveButton() {
 	return (
 		<button
 			onClick={() => router.replace("/")}
-			className="p-4 rounded-full bg-red-600 shadow-md"
+			className="p-4 rounded-full bg-red-600 text-white shadow-md"
 		>
 			<LogoutIcon />
 		</button>
