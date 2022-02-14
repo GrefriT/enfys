@@ -5,6 +5,7 @@ type Mode = "audio" | "video";
 type Props = {
 	stream: MediaStream;
 	addTrack: (track: MediaStreamTrack) => void;
+	update: (data: any) => void;
 	mode?: Mode;
 	OnIcon: ElementType;
 	OffIcon: ElementType;
@@ -14,7 +15,14 @@ function getTracks(stream: MediaStream, mode: Mode) {
 	return stream[`get${mode === "video" ? "Video" : "Audio"}Tracks`]();
 }
 
-export default function ToggleButton({ stream, addTrack, mode = "audio", OnIcon, OffIcon }: Props) {
+export default function ToggleButton({
+	stream,
+	addTrack,
+	update,
+	mode = "audio",
+	OnIcon,
+	OffIcon,
+}: Props) {
 	const [enabled, setEnabled] = useState(!!getTracks(stream, mode).length);
 
 	function handleToggle() {
@@ -24,8 +32,15 @@ export default function ToggleButton({ stream, addTrack, mode = "audio", OnIcon,
 			navigator.mediaDevices
 				.getUserMedia({ [mode]: true })
 				.then((stream) => addTrack(getTracks(stream, mode)[0]))
-				.then(() => setEnabled(true));
-		else setEnabled((enabled) => (track.enabled = !enabled));
+				.then(() => {
+					setEnabled(true);
+					update({ [mode]: true });
+				});
+		else
+			setEnabled((enabled) => {
+				update({ [mode]: !enabled });
+				return (track.enabled = !enabled);
+			});
 	}
 
 	return (

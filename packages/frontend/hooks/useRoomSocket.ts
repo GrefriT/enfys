@@ -3,17 +3,27 @@ import Peer, { Options } from "simple-peer";
 import Socket from "lib/socket";
 import type { UserConfig } from "components/room/Lobby";
 
-type UserData = { id: string; name: string };
+interface UserData {
+	id: string;
+	name: string;
+	audio: boolean;
+	video: boolean;
+}
 
-export class User extends Peer {
-	public readonly id: string;
-	public readonly name: string;
+export class User extends Peer implements UserData {
+	readonly id: string;
+	readonly name: string;
+	readonly audio: boolean;
+	readonly video: boolean;
 
 	constructor(peerConfig: Options, data: UserData) {
 		super(peerConfig);
 
-		this.id = data.id;
-		this.name = data.name;
+		this.updateData(data);
+	}
+
+	updateData(update: Partial<UserData>) {
+		Object.entries(update).forEach(([k, v]) => (this[k] = v));
 	}
 }
 
@@ -98,13 +108,28 @@ export default function useRoomSocket(code: string, userConfig: UserConfig) {
 				setUsers((users) => users.filter((user) => user.id !== id));
 			}
 
+			function handleUserUpdate(data: { id: string; update: Partial<UserData> }) {
+				if (!peersRef.current[data.id]) return;
+				peersRef.current[data.id].updateData(data.update);
+
+				setUsers((users) => {
+					const newUsers = [...users];
+					newUsers[newUsers.findIndex((user) => user.id === data.id)] =
+						peersRef.current[data.id];
+					return newUsers;
+				});
+			}
+
 			socket.current = new Socket(
-				`/room/${code}/socket?name=${encodeURIComponent(userConfig.name)}`
+				`/room/${code}/socket?name=${encodeURIComponent(
+					userConfig.name
+				)}&audio=${!!userConfig.mic}&video=${!!userConfig.camera}`
 			);
 			socket.current
 				.add("all-users", handleAllUsers)
 				.add("user-joined", handleUserJoin)
 				.add("user-disconnected", handleUserDisconnect)
+				.add("user-updated", handleUserUpdate)
 				.add("receive-signal", (data: any) => signalPeer(data.id, data.signal));
 		})();
 
@@ -119,5 +144,9 @@ export default function useRoomSocket(code: string, userConfig: UserConfig) {
 		stream.current.addTrack(track);
 	}
 
-	return { users, stream: stream.current, addTrack };
+	function update(data: Partial<UserData>) {
+		socket.current.send("user-update", data);
+	}
+
+	return { users, stream: stream.current, addTrack, update };
 }

@@ -4,15 +4,21 @@ const Socket = require("./socket");
 const ROOM_TTL = 1000 * 60 * 5;
 
 class User extends Socket {
-	constructor(socket, name) {
+	constructor(socket, userConfig) {
 		super(socket);
 
 		this.id = generateCode(24);
-		this.name = name;
+		this.updateConfig(userConfig);
+	}
+
+	updateConfig(newConfig) {
+		this.name = newConfig.name;
+		this.audio = newConfig.audio;
+		this.video = newConfig.video;
 	}
 
 	toJSON() {
-		return { id: this.id, name: this.name };
+		return { id: this.id, name: this.name, audio: this.audio, video: this.video };
 	}
 }
 
@@ -28,10 +34,10 @@ class Room {
 		return Object.values(this.peers);
 	}
 
-	onPeer(rawSocket, name) {
+	onPeer(rawSocket, userConfig) {
 		clearTimeout(this.destroyTimeout);
 
-		const user = new User(rawSocket, name);
+		const user = new User(rawSocket, userConfig);
 
 		this.peers[user.id] = user;
 		user.send(
@@ -45,6 +51,10 @@ class Room {
 			.add("return-signal", ({ signal, callerId }) =>
 				this.to(callerId).send("receive-signal", { signal, id: user.id })
 			)
+			.add("user-update", (data) => {
+				user.updateConfig(data);
+				this.broadcast("user-updated", { id: user.id, update: data });
+			})
 			.on("close", () => {
 				delete this.peers[user.id];
 

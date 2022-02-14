@@ -6,6 +6,8 @@ const codeValidationSchema = {
 	},
 	query: {
 		name: { type: "string", maxLength: 32 },
+		audio: { type: "boolean" },
+		video: { type: "boolean" },
 	},
 };
 
@@ -20,7 +22,7 @@ async function route(fastify) {
 		(connection, req) => {
 			const room = rooms.get(req.params.code);
 			if (!room) return connection.socket.close();
-			room.onPeer(connection.socket, req.query.name);
+			room.onPeer(connection.socket, req.query);
 		}
 	);
 

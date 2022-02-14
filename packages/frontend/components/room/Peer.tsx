@@ -4,6 +4,7 @@ import hark from "hark";
 
 import ContractIcon from "@icons/contract.svg";
 import ExpandIcon from "@icons/expand.svg";
+import MicOffIcon from "@icons/mic-off.svg";
 
 export default function Peer({ peer }: { peer: User }) {
 	const [expanded, setExpanded] = useState(true);
@@ -38,7 +39,8 @@ export default function Peer({ peer }: { peer: User }) {
 			speechEvents?.stop();
 			peer.destroy();
 		};
-	}, [peer]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [peer.id]);
 
 	return (
 		<div className="relative flex-1">
@@ -49,11 +51,26 @@ export default function Peer({ peer }: { peer: User }) {
 				ref={ref}
 				playsInline
 			/>
+			{!peer.video && (
+				// eslint-disable-next-line @next/next/no-img-element
+				<img
+					src={`https://avatars.dicebear.com/api/adventurer-neutral/${encodeURIComponent(
+						peer.name
+					)}.svg`}
+					className="absolute inset-0 w-full h-full rounded-md"
+					alt="Poster"
+				/>
+			)}
 			<div className="absolute bottom-0 left-0 flex items-center justify-between gap-2 text-white w-full p-2 bg-gradient-to-t from-black/50 to-transparent rounded-md">
 				<small>{peer.name}</small>
-				<button onClick={() => setExpanded((expanded) => !expanded)}>
-					{expanded ? <ExpandIcon /> : <ContractIcon />}
-				</button>
+				<div className="flex items-center gap-2">
+					{!peer.audio && <MicOffIcon className="opacity-75" width={18} height={18} />}
+					{peer.video && (
+						<button onClick={() => setExpanded((expanded) => !expanded)}>
+							{expanded ? <ExpandIcon /> : <ContractIcon />}
+						</button>
+					)}
+				</div>
 			</div>
 		</div>
 	);

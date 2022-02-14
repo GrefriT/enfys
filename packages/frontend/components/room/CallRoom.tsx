@@ -19,7 +19,7 @@ type Props = {
 
 function Users({ users }: { users: User[] }) {
 	return (
-		<div id="enfys-users" className="min-h-0 flex-1 flex flex-wrap gap-4 p-8 portrait:flex-col">
+		<div id="enfys-users" className="min-h-0 flex-1 flex flex-wrap gap-4 p-4 portrait:flex-col">
 			{users.map((user) => (
 				<Peer peer={user} key={user.id} />
 			))}
@@ -38,42 +38,46 @@ function AlonePlaceholder({ code }: { code: string }) {
 }
 
 export default function CallRoom({ room, userConfig }: Props) {
-	const { users, stream, addTrack } = useRoomSocket(room.code, userConfig);
+	const { users, stream, addTrack, update } = useRoomSocket(room.code, userConfig);
 
 	return (
 		<div className="flex flex-col h-screen">
 			{users.length ? <Users users={users} /> : <AlonePlaceholder code={room.code} />}
-			<div className="flex items-end">
-				{stream && <UserVideo className="rounded-tr-lg" width={200} stream={stream} />}
-				<div className="flex justify-between flex-1 px-8 py-4">
-					<div className="flex items-center gap-4">
-						{stream && (
-							<>
-								<ToggleButton
-									stream={stream}
-									addTrack={addTrack}
-									OnIcon={MicIcon}
-									OffIcon={MicOffIcon}
-								/>
-								<ToggleButton
-									mode="video"
-									stream={stream}
-									addTrack={addTrack}
-									OnIcon={VideocamIcon}
-									OffIcon={VideocamOffIcon}
-								/>
-							</>
-						)}
-						<LeaveButton />
-					</div>
-					<div className="flex items-center gap-4">
-						{users.length > 0 && <FullscreenButton />}
-						<div>
-							<h5 className="font-semibold text-lg">{room.title}</h5>
-							<span className="opacity-75">{room.code}</span>
-						</div>
-					</div>
+			<div className="flex items-center justify-between flex-wrap-reverse gap-8 px-4 py-2">
+				<div className="flex items-center gap-4">
+					{stream && (
+						<>
+							<ToggleButton
+								stream={stream}
+								update={update}
+								addTrack={addTrack}
+								OnIcon={MicIcon}
+								OffIcon={MicOffIcon}
+							/>
+							<ToggleButton
+								mode="video"
+								stream={stream}
+								update={update}
+								addTrack={addTrack}
+								OnIcon={VideocamIcon}
+								OffIcon={VideocamOffIcon}
+							/>
+						</>
+					)}
+					<LeaveButton />
+					{users.length > 0 && <FullscreenButton />}
 				</div>
+				<div className="hidden text-center sm:block">
+					<h5 className="hidden font-semibold text-lg sm:block">{room.title}</h5>
+					<span className="opacity-75">{room.code}</span>
+				</div>
+				{stream && (
+					<UserVideo
+						className="rounded-md aspect-video object-cover bg-black"
+						width={160}
+						stream={stream}
+					/>
+				)}
 			</div>
 		</div>
 	);
