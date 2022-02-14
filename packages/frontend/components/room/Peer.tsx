@@ -13,16 +13,31 @@ export default function Peer({ peer }: { peer: User }) {
 	useEffect(() => {
 		let speechEvents: hark.Harker;
 
-		peer.on("stream", (stream) => {
-			ref.current.srcObject = stream;
-
+		function startListening(stream: MediaStream) {
 			speechEvents = hark(stream);
 
 			speechEvents.on("speaking", () => setSpeaking(true));
 			speechEvents.on("stopped_speaking", () => setSpeaking(false));
+		}
+
+		peer.on("stream", (stream) => {
+			ref.current.srcObject = stream;
+			ref.current.play();
+
+			function trackHandler(track: MediaStreamTrack) {
+				if (track.kind !== "audio") return;
+				startListening(stream);
+				peer.off("track", trackHandler);
+			}
+
+			if (stream.getAudioTracks().length) startListening(stream);
+			else peer.on("track", trackHandler);
 		});
 
-		return () => speechEvents?.stop();
+		return () => {
+			speechEvents?.stop();
+			peer.destroy();
+		};
 	}, [peer]);
 
 	return (
@@ -32,7 +47,6 @@ export default function Peer({ peer }: { peer: User }) {
 					speaking ? "border-emerald-600" : "border-transparent"
 				} ${expanded ? "object-cover" : ""}`}
 				ref={ref}
-				autoPlay
 				playsInline
 			/>
 			<div className="absolute bottom-0 left-0 flex items-center justify-between gap-2 w-full p-2 bg-gradient-to-t from-black/50 to-transparent rounded-md">

@@ -15,7 +15,7 @@ export default function Switch({ checked, onChange }: Props) {
 			<div
 				aria-hidden="true"
 				className={`${
-					checked ? "translate-x-full bg-emerald-600" : "bg-neutral-400"
+					checked ? "translate-x-full bg-emerald-500" : "bg-neutral-400"
 				} pointer-events-none h-6 w-6 rounded-full transition`}
 			/>
 		</BaseSwitch>

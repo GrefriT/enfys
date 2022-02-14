@@ -60,10 +60,19 @@ export default function useRoomSocket(code: string, userConfig: UserConfig) {
 		const signalPeer = (id: string, signal: any) => peersRef.current[id].signal(signal);
 
 		(async () => {
-			stream.current = await navigator.mediaDevices.getUserMedia({
-				audio: { deviceId: userConfig.mic, echoCancellation: true, noiseSuppression: true },
-				video: { deviceId: userConfig.camera },
-			});
+			const mediaConstraints: MediaStreamConstraints = {};
+
+			if (userConfig.mic)
+				mediaConstraints.audio = {
+					deviceId: userConfig.mic,
+					echoCancellation: true,
+					noiseSuppression: true,
+				};
+			if (userConfig.camera) mediaConstraints.video = { deviceId: userConfig.camera };
+
+			if (Object.keys(mediaConstraints).length)
+				stream.current = await navigator.mediaDevices.getUserMedia(mediaConstraints);
+			else stream.current = new MediaStream();
 
 			function handleAllUsers(usersData: UserData[]) {
 				const users = usersData.map((userData) => {
@@ -105,5 +114,10 @@ export default function useRoomSocket(code: string, userConfig: UserConfig) {
 		};
 	}, [code, userConfig]);
 
-	return { users, stream: stream.current };
+	function addTrack(track: MediaStreamTrack) {
+		users.forEach((user) => user.addTrack(track, stream.current));
+		stream.current.addTrack(track);
+	}
+
+	return { users, stream: stream.current, addTrack };
 }
