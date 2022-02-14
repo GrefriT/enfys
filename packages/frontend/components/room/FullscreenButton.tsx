@@ -2,7 +2,7 @@ import ScanIcon from "@icons/scan.svg";
 
 export default function FullscreenButton() {
 	function handleRequest() {
-		document.getElementById("enfys-peers").requestFullscreen();
+		document.getElementById("enfys-users").requestFullscreen();
 	}
 
 	return (

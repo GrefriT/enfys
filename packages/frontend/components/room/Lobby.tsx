@@ -18,9 +18,18 @@ type Props = {
 };
 
 export default function Lobby({ room, onJoin }: Props) {
-	const [config, setConfig] = useState({ name: "", camera: "", mic: "" });
+	const [config, setConfig] = useState({
+		name: localStorage.username || "",
+		camera: "",
+		mic: "",
+	});
 	const updateConfig = (value: Partial<typeof config>) =>
 		setConfig((config) => ({ ...config, ...value }));
+
+	function handleJoin() {
+		localStorage.username = config.name;
+		onJoin(config);
+	}
 
 	return (
 		<div className="flex items-center justify-center p-4 h-screen">
@@ -49,7 +58,7 @@ export default function Lobby({ room, onJoin }: Props) {
 				</div>
 				<div className="flex items-center justify-end gap-4 p-4">
 					<Link href="/">Cancel</Link>
-					<Button disabled={!config.name.trim()} onClick={() => onJoin(config)}>
+					<Button disabled={!config.name.trim()} onClick={handleJoin}>
 						Join room
 					</Button>
 				</div>

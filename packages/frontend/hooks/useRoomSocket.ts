@@ -5,7 +5,7 @@ import type { UserConfig } from "components/room/Lobby";
 
 type UserData = { id: string; name: string };
 
-class User extends Peer {
+export class User extends Peer {
 	public readonly id: string;
 	public readonly name: string;
 

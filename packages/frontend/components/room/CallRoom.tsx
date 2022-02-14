@@ -1,31 +1,34 @@
 import type { Room } from "hooks/useRoom";
-import useRoomSocket from "hooks/useRoomSocket";
+import useRoomSocket, { User } from "hooks/useRoomSocket";
 import type { UserConfig } from "components/room/Lobby";
 import MicButton from "components/room/MicButton";
 import LeaveButton from "components/room/LeaveButton";
 import FullscreenButton from "components/room/FullscreenButton";
 import WebcamButton from "components/room/WebcamButton";
 import UserVideo from "components/room/UserVideo";
-import PeerVideo from "components/room/PeerVideo";
+import Peer from "components/room/Peer";
 
 type Props = {
 	room: Room;
 	userConfig: UserConfig;
 };
 
+function Users({ users }: { users: User[] }) {
+	return (
+		<div id="enfys-users" className="min-h-0 flex-1 flex flex-wrap gap-4 p-8 portrait:flex-col">
+			{users.map((user) => (
+				<Peer peer={user} key={user.id} />
+			))}
+		</div>
+	);
+}
+
 export default function CallRoom({ room, userConfig }: Props) {
 	const { users, stream } = useRoomSocket(room.code, userConfig);
 
 	return (
 		<div className="flex flex-col h-screen">
-			<div
-				id="enfys-peers"
-				className="flex-1 flex items-center justify-center flex-wrap gap-4 p-8"
-			>
-				{users.map((user) => (
-					<PeerVideo peer={user} key={user.id} />
-				))}
-			</div>
+			<Users users={users} />
 			<div className="flex items-end">
 				{stream && (
 					<UserVideo className="rounded-tr-lg" width={200} height={150} stream={stream} />
