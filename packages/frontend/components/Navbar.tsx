@@ -4,7 +4,6 @@ import dynamic from "next/dynamic";
 const ThemeSelector = dynamic(() => import("components/ThemeSelector"), { ssr: false });
 
 import EnfysLogo from "@icons/enfys-logo.svg";
-import GithubIcon from "@icons/github.svg";
 
 export default function Navbar() {
 	return (
@@ -16,9 +15,6 @@ export default function Navbar() {
 			</Link>
 			<div className="flex items-center gap-4 sm:gap-8">
 				<Link href="/terms">Terms</Link>
-				<a href="https://github.com/GrefriT/enfys" target="_blank" rel="noreferrer">
-					<GithubIcon />
-				</a>
 				<ThemeSelector />
 			</div>
 		</nav>
