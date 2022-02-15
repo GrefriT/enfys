@@ -47,20 +47,10 @@ export default function Peer({ peer }: { peer: User }) {
 			<video
 				className={`absolute inset-0 w-full h-full rounded-md border-2 transition ${
 					speaking ? "border-emerald-600" : "border-transparent"
-				} ${expanded ? "object-cover" : ""}`}
+				} ${!peer.video || expanded ? "object-cover" : ""}`}
 				ref={ref}
 				playsInline
 			/>
-			{!peer.video && (
-				// eslint-disable-next-line @next/next/no-img-element
-				<img
-					src={`https://avatars.dicebear.com/api/adventurer-neutral/${encodeURIComponent(
-						peer.name
-					)}.svg`}
-					className="absolute inset-0 w-full h-full rounded-md"
-					alt="Poster"
-				/>
-			)}
 			<div className="absolute bottom-0 left-0 flex items-center justify-between gap-2 text-white w-full p-2 bg-gradient-to-t from-black/50 to-transparent rounded-md">
 				<small>{peer.name}</small>
 				<div className="flex items-center gap-2">

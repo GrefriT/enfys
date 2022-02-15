@@ -12,9 +12,7 @@ class User extends Socket {
 	}
 
 	updateConfig(newConfig) {
-		this.name = newConfig.name;
-		this.audio = newConfig.audio;
-		this.video = newConfig.video;
+		Object.entries(newConfig).forEach(([k, v]) => (this[k] = v));
 	}
 
 	toJSON() {
